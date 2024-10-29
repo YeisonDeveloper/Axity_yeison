@@ -3,6 +3,7 @@ import axios from 'axios';
 import medellin from '../assets/Bandera-Medellin.png';
 import cali from '../assets/Bandera-Cali.png';
 import ModalProductos from './Modal';
+import Swal from "sweetalert2";
 
 const Formulario = () => {
     const [nombre, setNombre] = useState('');
@@ -69,41 +70,53 @@ const Formulario = () => {
 
     const handleInsert = async (e) => {
         e.preventDefault();
-        if (validarFormulario()) {
-            try {
-                let response;
-                if (isEditMode) {
-                    response = await axios.put(`http://localhost:3000/api/formulario/${id}`, {
-                        nombre,
-                        telefono,
-                        telefonoMovil,
-                        correo,
-                        bodega,
-                        oficina,
-                    });
-                    alert('Formulario actualizado correctamente');
-                } else {
-                    response = await axios.post('http://localhost:3000/api/formulario', {
-                        nombre,
-                        telefono,
-                        telefonoMovil,
-                        correo,
-                        bodega,
-                        oficina,
-                    });
-                    alert('Formulario enviado correctamente');
-                }
 
-                console.log(response.data);
-                resetFormulario();
-                fetchTablaData();
-            } catch (error) {
-                console.error('Error al enviar el formulario:', error);
-                if (error.response) {
-                    console.error('Error del servidor:', error.response.data);
-                    alert(`Hubo un problema al enviar el formulario: ${error.response.data.error}`);
-                } else {
-                    alert('Hubo un problema al enviar el formulario');
+        if (validarFormulario()) {
+            const result = await Swal.fire({
+                title: isEditMode ? '¿Actualizar formulario?' : '¿Crear formulario?',
+                text: isEditMode ? '¿Estás seguro de que deseas actualizar este formulario?' : '¿Estás seguro de que deseas crear este formulario?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, proceder',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    let response;
+                    if (isEditMode) {
+                        response = await axios.put(`http://localhost:3000/api/formulario/${id}`, {
+                            nombre,
+                            telefono,
+                            telefonoMovil,
+                            correo,
+                            bodega,
+                            oficina,
+                        });
+                        Swal.fire('Actualizado', 'Formulario actualizado correctamente', 'success');
+                    } else {
+                        response = await axios.post('http://localhost:3000/api/formulario', {
+                            nombre,
+                            telefono,
+                            telefonoMovil,
+                            correo,
+                            bodega,
+                            oficina,
+                        });
+                        Swal.fire('Creado', 'Formulario enviado correctamente', 'success');
+                    }
+
+                    console.log(response.data);
+                    resetFormulario();
+                    fetchTablaData();
+                } catch (error) {
+                    console.error('Error al enviar el formulario:', error);
+                    if (error.response) {
+                        console.error('Error del servidor:', error.response.data);
+                        Swal.fire('Error', `Hubo un problema al enviar el formulario: ${error.response.data.error}`, 'error');
+                    } else {
+                        Swal.fire('Error', 'Hubo un problema al enviar el formulario', 'error');
+                    }
                 }
             }
         }
