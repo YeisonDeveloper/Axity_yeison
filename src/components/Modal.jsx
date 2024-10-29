@@ -50,7 +50,7 @@ export default function ModalProductos() {
                     <Button
                         key={size}
                         onPress={() => handleOpen(size)}
-                        className="bg-blue-600 text-white"
+                        className="bg-blue-600 text-white font-bold "
                     >
                         Consultar productos
                     </Button>
