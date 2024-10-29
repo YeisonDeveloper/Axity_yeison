@@ -20,3 +20,10 @@ const connectToDatabase = async () => {
 connectToDatabase();
 
 export default sequelize;
+
+// NOTA!!!!!!!!!! CREAR LOGIN PARA LA CONEXIÓN DE LA BASE DE DATOS
+
+// CREATE LOGIN axity WITH PASSWORD = 'Ingre$o';
+// USE Formulario;
+// CREATE USER axity FOR LOGIN axity;
+// ALTER ROLE db_owner ADD MEMBER axity;
