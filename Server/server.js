@@ -1,9 +1,7 @@
-// app.js
 import express from 'express';
-import sequelize from './db.js';
 import Formulario from './routes/Formulario.js';
 import cors from 'cors';
-
+import productosRouter from './routes/Productos.js'
 
 const app = express();
 app.use(express.json());
@@ -52,13 +50,15 @@ app.get('/api/formulario/:id', async (req, res) => {
 // Ruta para consultar todos los datos del formulario
 app.get('/api/formulario', async (req, res) => {
     try {
-        const formularios = await Formulario.findAll(); // Obtiene todos los registros de la tabla Formulario
+        const formularios = await Formulario.findAll();
         res.json(formularios);
     } catch (error) {
         console.error('Error al consultar formularios:', error);
         res.status(500).json({ error: 'Error al consultar formularios' });
     }
 });
+
+app.use('/api/productos', productosRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {

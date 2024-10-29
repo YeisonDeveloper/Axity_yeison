@@ -1,4 +1,3 @@
-// db.js
 import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize('Formulario', 'axity', 'Ingre$o', {

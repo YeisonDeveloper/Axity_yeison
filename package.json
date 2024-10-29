@@ -9,17 +9,19 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deve": "nodemon server/server.js"
-
   },
   "dependencies": {
+    "@nextui-org/react": "^2.4.8",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "framer-motion": "^11.11.10",
     "mssql": "^11.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.5",
+    "sweetalert2": "^11.14.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

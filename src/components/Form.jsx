@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import medellin from '../assets/Bandera-Medellin.png'; // Asegúrate de que esta ruta sea correcta
-import cali from '../assets/Bandera-Cali.png'; // Asegúrate de que esta ruta sea correcta
+import medellin from '../assets/Bandera-Medellin.png';
+import cali from '../assets/Bandera-Cali.png';
+import ModalProductos from './Modal';
 
 const Formulario = () => {
     const [nombre, setNombre] = useState('');
@@ -14,6 +15,7 @@ const Formulario = () => {
     const [id, setId] = useState('');
     const [isEditMode, setIsEditMode] = useState(false);
     const [tablaData, setTablaData] = useState([]);
+    const [imagenBodega, setImagenBodega] = useState('');
 
     const oficinasPorBodega = {
         Medellín: ['M3390', 'M1425'],
@@ -23,6 +25,17 @@ const Formulario = () => {
     useEffect(() => {
         fetchTablaData();
     }, []);
+
+    useEffect(() => {
+        // Actualizar la imagen según la bodega seleccionada
+        if (bodega === 'Medellín') {
+            setImagenBodega(medellin);
+        } else if (bodega === 'Cali') {
+            setImagenBodega(cali);
+        } else {
+            setImagenBodega(''); // Limpiar imagen si no hay bodega seleccionada
+        }
+    }, [bodega]);
 
     const fetchTablaData = async () => {
         try {
@@ -204,14 +217,14 @@ const Formulario = () => {
                         {errores.correo && <p className="text-red-500 text-sm mt-1">{errores.correo}</p>}
                     </div>
 
-                    {/* Bodega y Oficina */}
+                    {/* Bodega */}
                     <div className="mb-6">
                         <label className="block text-gray-800 font-medium">Bodega:</label>
                         <select
                             value={bodega}
                             onChange={(e) => {
                                 setBodega(e.target.value);
-                                setOficina(''); // Resetear oficina al cambiar bodega
+                                setOficina('');
                             }}
                             className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         >
@@ -221,29 +234,37 @@ const Formulario = () => {
                         </select>
                     </div>
 
-                    <div className="mb-6">
-                        <label className="block text-gray-800 font-medium">Oficina:</label>
-                        <select
-                            value={oficina}
-                            onChange={(e) => setOficina(e.target.value)}
-                            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                            disabled={!bodega} // Desactivar si no hay bodega seleccionada
-                        >
-                            <option value="">Selecciona una oficina</option>
-                            {bodega && oficinasPorBodega[bodega].map((oficina) => (
-                                <option key={oficina} value={oficina}>{oficina}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Oficina */}
+                    {bodega && (
+                        <div className="mb-6">
+                            <label className="block text-gray-800 font-medium">Oficina:</label>
+                            <select
+                                value={oficina}
+                                onChange={(e) => setOficina(e.target.value)}
+                                className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            >
+                                <option value="">Selecciona una oficina</option>
+                                {oficinasPorBodega[bodega].map((oficina) => (
+                                    <option key={oficina} value={oficina}>{oficina}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
+                    {/* Imagen de la bodega */}
+                    {imagenBodega && (
+                        <div className="mb-6">
+                            <img src={imagenBodega} alt={`Bodega ${bodega}`} className="w-[300px] h-auto mt-4" />
+                        </div>
+                    )}
                     {/* Botones de Envío y Limpiar */}
-                    <div className="flex justify-between">
+                    <div className="flex gap-3">
                         <button
                             type="submit"
                             onClick={handleInsert}
                             className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
                         >
-                            {isEditMode ? 'Actualizar' : 'Enviar'}
+                            {isEditMode ? 'Actualizar' : 'Crear'}
                         </button>
                         <button
                             type="button"
@@ -252,32 +273,33 @@ const Formulario = () => {
                         >
                             Limpiar y Restablecer
                         </button>
+                        <ModalProductos />
                     </div>
                 </form>
 
-                {/* Tabla */}
-                <div className="bg-white p-8 rounded-lg shadow-lg w-1/2 overflow-x-auto">
+                {/* Tabla de datos */}
+                <div className="w-1/2 bg-white p-2 rounded-lg shadow-lg">
                     <h2 className="text-xl font-semibold mb-4">Datos Registrados</h2>
-                    <table className="min-w-full border-collapse border border-gray-300">
+                    <table className="min-w-full bg-white">
                         <thead>
-                            <tr className="bg-gray-200">
-                                <th className="border border-gray-300 p-4">Nombre</th>
-                                <th className="border border-gray-300 p-4">Teléfono</th>
-                                <th className="border border-gray-300 p-4">Teléfono Móvil</th>
-                                <th className="border border-gray-300 p-4">Correo</th>
-                                <th className="border border-gray-300 p-4">Bodega</th>
-                                <th className="border border-gray-300 p-4">Oficina</th>
+                            <tr>
+                                <th className="py-2 px-4 border-b">Nombre</th>
+                                <th className="py-2 px-4 border-b">Teléfono</th>
+                                <th className="py-2 px-4 border-b">Teléfono Móvil</th>
+                                <th className="py-2 px-4 border-b">Correo</th>
+                                <th className="py-2 px-4 border-b">Bodega</th>
+                                <th className="py-2 px-4 border-b">Oficina</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {tablaData.map((data) => (
-                                <tr key={data.id}>
-                                    <td className="border border-gray-300 p-4">{data.nombre}</td>
-                                    <td className="border border-gray-300 p-4">{data.telefono}</td>
-                                    <td className="border border-gray-300 p-4">{data.telefonoMovil}</td>
-                                    <td className="border border-gray-300 p-4">{data.correo}</td>
-                                    <td className="border border-gray-300 p-4">{data.bodega}</td>
-                                    <td className="border border-gray-300 p-4">{data.oficina}</td>
+                            {tablaData.map((item) => (
+                                <tr key={item.id}>
+                                    <td className="py-2 px-4 border-b">{item.nombre}</td>
+                                    <td className="py-2 px-4 border-b">{item.telefono}</td>
+                                    <td className="py-2 px-4 border-b">{item.telefonoMovil}</td>
+                                    <td className="py-2 px-4 border-b">{item.correo}</td>
+                                    <td className="py-2 px-4 border-b">{item.bodega}</td>
+                                    <td className="py-2 px-4 border-b">{item.oficina}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -285,13 +307,9 @@ const Formulario = () => {
                 </div>
             </main>
 
-            {/* Imágenes */}
-            <footer className="bg-gray-200 p-6 text-center">
-                <h2 className="text-2xl font-semibold mb-4">Nuestras Sedes</h2>
-                <div className="flex justify-around">
-                    <img src={medellin} alt="Bandera Medellín" className="w-32" />
-                    <img src={cali} alt="Bandera Cali" className="w-32" />
-                </div>
+            {/* Pie de página */}
+            <footer className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center p-4">
+                <p>&copy; 2024 Yeison. Todos los derechos reservados.</p>
             </footer>
         </div>
     );
